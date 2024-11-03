@@ -5,7 +5,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ProductDetailsScreen from './src/screens/ProductDetailsScreen';
-
+import MapScreen from './src/screens/MapScreen';
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -15,6 +15,7 @@ export default function App() {
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} />
+          <Stack.Screen name="MapScreen" component={MapScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

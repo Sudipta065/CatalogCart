@@ -25,6 +25,7 @@ const HomeScreen = ({ navigation }) => {
     return <Text style={styles.errorText}>Error fetching products.</Text>;
 
   return (
+    <>
     <FlatList
       data={products}
       keyExtractor={(item) => item.id.toString()}
@@ -42,6 +43,11 @@ const HomeScreen = ({ navigation }) => {
         </View>
       )}
     />
+       <Button
+        title="Go to Map"
+        onPress={() => navigation.navigate('MapScreen', { location })}
+      />
+    </>
   );
 };
 

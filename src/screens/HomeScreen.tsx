@@ -2,11 +2,32 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Button, StyleSheet } from "react-native";
 import { useFetchProductsQuery } from "../store/apiSlice";
 import * as Location from "expo-location";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToCart,
+  increaseQuantity,
+  decreaseQuantity,
+} from "../store/cartSlice";
+import { RootState } from '../store/store';
 const HomeScreen = ({ navigation }) => {
   const { data: products, isLoading, error } = useFetchProductsQuery("asc");
 
   const [location, setLocation] = useState(null);
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const dispatch = useDispatch();
+  const handleAddToCart = (product) => {
+    dispatch(
+      addToCart({ id: product.id, title: product.title, price: product.price })
+    );
+  };
 
+  const handleIncrease = (productId) => {
+    dispatch(increaseQuantity(productId));
+  };
+
+  const handleDecrease = (productId) => {
+    dispatch(decreaseQuantity(productId));
+  };
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -26,26 +47,48 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <>
-    <FlatList
-      data={products}
-      keyExtractor={(item) => item.id.toString()}
-      contentContainerStyle={styles.listContainer}
-      renderItem={({ item }) => (
-        <View style={styles.card}>
-          <Text style={styles.productTitle}>{item.title}</Text>
-          <Text style={styles.productPrice}>${item.price}</Text>
-          <Button
-            title="View Details"
-            onPress={() =>
-              navigation.navigate("ProductDetails", { product: item })
-            }
-          />
-        </View>
-      )}
-    />
-       <Button
+      <FlatList
+        data={products}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.listContainer}
+        renderItem={({ item }) => {
+          const cartItem = cartItems.find(
+            (cartItem) => cartItem.id === item.id
+          );
+
+          return (
+            <View style={styles.card}>
+              <Text style={styles.productTitle}>{item.title}</Text>
+              <Text style={styles.productPrice}>${item.price}</Text>
+              <Button
+                title="View Details"
+                onPress={() =>
+                  navigation.navigate("ProductDetails", { product: item })
+                }
+              />
+              {cartItem ? (
+                <View style={styles.quantityContainer}>
+                  <Button title="-" onPress={() => handleDecrease(item.id)} />
+                  <Text style={styles.quantityText}>{cartItem.quantity}</Text>
+                  <Button title="+" onPress={() => handleIncrease(item.id)} />
+                </View>
+              ) : (
+                <Button
+                  title="Add to Cart"
+                  onPress={() => handleAddToCart(item)}
+                />
+              )}
+            </View>
+          );
+        }}
+      />
+      <Button
+        title="Go to Cart"
+        onPress={() => navigation.navigate("CartScreen")}
+      />
+      <Button
         title="Go to Map"
-        onPress={() => navigation.navigate('MapScreen', { location })}
+        onPress={() => navigation.navigate("MapScreen", { location })}
       />
     </>
   );
@@ -89,6 +132,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     marginBottom: 12,
+  },
+  quantityButton: {
+    backgroundColor: "#ff6347",
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  quantityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  quantityText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginHorizontal: 10,
   },
 });
 

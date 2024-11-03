@@ -1,25 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet, ActivityIndicator } from "react-native";
-import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
+import { View, Text, Image, StyleSheet, Button } from "react-native";
 
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToCart,
+  increaseQuantity,
+  decreaseQuantity,
+} from "../store/cartSlice";
+import { RootState } from '../store/store';
 const ProductDetailsScreen = ({ route }) => {
   const { product } = route.params;
-  const [location, setLocation] = useState(null);
-  const [locationError, setLocationError] = useState(null);
+  const dispatch = useDispatch();
+  const cartItem = useSelector((state: RootState) =>
+    state.cart.items.find((item) => item.id === product.id)
+  );
 
-  // Fetch user location
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setLocationError("Permission denied");
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location.coords);
-    })();
-  }, []);
+  const handleAddToCart = () => {
+    dispatch(
+      addToCart({ id: product.id, title: product.title, price: product.price })
+    );
+  };
+  const handleIncrease = () => {
+    dispatch(increaseQuantity(product.id));
+  };
+
+  const handleDecrease = () => {
+    dispatch(decreaseQuantity(product.id));
+  };
 
   return (
     <View style={styles.container}>
@@ -28,27 +35,16 @@ const ProductDetailsScreen = ({ route }) => {
         <Text style={styles.productTitle}>{product.title}</Text>
         <Text style={styles.productPrice}>${product.price}</Text>
         <Text style={styles.productDescription}>{product.description}</Text>
+        {cartItem ? (
+          <View style={styles.quantityContainer}>
+            <Button title="-" onPress={handleDecrease} />
+            <Text style={styles.quantityText}>{cartItem.quantity}</Text>
+            <Button title="+" onPress={handleIncrease} />
+          </View>
+        ) : (
+          <Button title="Add to Cart" onPress={handleAddToCart} />
+        )}
       </View>
-
-      <Text style={styles.mapHeader}>Your Current Location:</Text>
-
-      {location ? (
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: location.latitude,
-            longitude: location.longitude,
-            latitudeDelta: 0.05,
-            longitudeDelta: 0.05,
-          }}
-        >
-          <Marker coordinate={location} title="You are here" />
-        </MapView>
-      ) : locationError ? (
-        <Text style={styles.errorText}>{locationError}</Text>
-      ) : (
-        <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
-      )}
     </View>
   );
 };
@@ -113,6 +109,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginTop: 10,
+  },
+  quantityButton: {
+    backgroundColor: "#ff6347",
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  quantityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  quantityText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginHorizontal: 10,
   },
 });
 

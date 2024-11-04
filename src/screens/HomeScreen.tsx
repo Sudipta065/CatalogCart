@@ -8,13 +8,20 @@ import {
   increaseQuantity,
   decreaseQuantity,
 } from "../store/cartSlice";
-import { RootState } from '../store/store';
+import { RootState } from "../store/store";
+import { saveProductsToCache } from "../utils/storage";
 const HomeScreen = ({ navigation }) => {
   const { data: products, isLoading, error } = useFetchProductsQuery("asc");
 
   const [location, setLocation] = useState(null);
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (products) {
+      saveProductsToCache(products);
+    }
+  }, [products]);
   const handleAddToCart = (product) => {
     dispatch(
       addToCart({ id: product.id, title: product.title, price: product.price })

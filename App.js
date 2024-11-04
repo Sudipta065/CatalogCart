@@ -8,14 +8,21 @@ import ProductDetailsScreen from './src/screens/ProductDetailsScreen';
 import MapScreen from './src/screens/MapScreen';
 import CartScreen from './src/screens/CartScreen';
 import FloatingCart from './src/components/FloatingCart';
+import HistoryScreen from './src/screens/HistoryScreen';
+import useNetworkStatus from './src/hooks/useNetworkStatus';
 const Stack = createStackNavigator();
 
 export default function App() {
+  const isOnline = useNetworkStatus();
   return (
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator>
+        {isOnline ? (
           <Stack.Screen name="Home" component={HomeScreen} />
+        ) : (
+          <Stack.Screen name="History" component={HistoryScreen} />
+        )}
           <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} />
           <Stack.Screen name="MapScreen" component={MapScreen} />
           <Stack.Screen name="CartScreen" component={CartScreen} />

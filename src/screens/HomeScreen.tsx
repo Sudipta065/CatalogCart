@@ -8,20 +8,55 @@ import {
   increaseQuantity,
   decreaseQuantity,
 } from "../store/cartSlice";
+import { format } from "date-fns";
 import { RootState } from "../store/store";
 import { saveProductsToCache } from "../utils/storage";
+
 const HomeScreen = ({ navigation }) => {
   const { data: products, isLoading, error } = useFetchProductsQuery("asc");
-
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
+  const [currentTimestamp, setCurrentTimestamp] = useState<string | null>(null);
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const updateTimestamp = () => {
+      const timestamp = new Date();
+      const formattedTimestamp = format(timestamp, "yyyy-MM-dd HH:mm:ss");
+      setCurrentTimestamp(formattedTimestamp);
+    };
+
+    updateTimestamp();
+    const intervalId = setInterval(updateTimestamp, 20000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     if (products) {
       saveProductsToCache(products);
     }
-  }, [products]);
+  }, [products])
+
+  useEffect(() => {
+    const requestLocationPermission = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === "granted") {
+          const locationData = await Location.getCurrentPositionAsync({});
+          setLocation(locationData);
+        } else {
+          console.log("Location permission denied");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    requestLocationPermission();
+  }, []);
+
   const handleAddToCart = (product) => {
     dispatch(
       addToCart({ id: product.id, title: product.title, price: product.price })
@@ -35,19 +70,7 @@ const HomeScreen = ({ navigation }) => {
   const handleDecrease = (productId) => {
     dispatch(decreaseQuantity(productId));
   };
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission denied");
-        return;
-      }
 
-      let location = await Location.getCurrentPositionAsync({});
-      // console.log("@@@@@@@@",location)
-      setLocation(location);
-    })();
-  }, []);
   if (isLoading) return <Text style={styles.loadingText}>Loading...</Text>;
   if (error)
     return <Text style={styles.errorText}>Error fetching products.</Text>;
@@ -55,14 +78,13 @@ const HomeScreen = ({ navigation }) => {
   return (
     <>
       <FlatList
-        data={products}
+        data={products || []}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => {
           const cartItem = cartItems.find(
             (cartItem) => cartItem.id === item.id
           );
-
           return (
             <View style={styles.card}>
               <Text style={styles.productTitle}>{item.title}</Text>
@@ -95,16 +117,21 @@ const HomeScreen = ({ navigation }) => {
       />
       <Button
         title="Go to Map"
-        onPress={() => navigation.navigate("MapScreen", { location })}
+        onPress={() => navigation.navigate('MapScreen', { location })}
       />
+
+      {currentTimestamp && (
+        <View style={styles.timestampContainer}>
+          <Text style={styles.timestampText}>{currentTimestamp}</Text>
+        </View>
+      )}
     </>
   );
 };
 
 const styles = StyleSheet.create({
   listContainer: {
-    padding: 10,
-    backgroundColor: "#f0f0f0",
+    paddingBottom: 100,
   },
   loadingText: {
     textAlign: "center",
@@ -157,6 +184,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginHorizontal: 10,
+  },
+  timestampContainer: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#333",
+    padding: 10,
+    borderRadius: 10,
+  },
+  timestampText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
 

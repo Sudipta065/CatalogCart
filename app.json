@@ -1,11 +1,10 @@
 {
   "expo": {
-    "name": "CatalogCart",
-    "slug": "CatalogCart",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "extra": {
+      "eas": {
+        "projectId": "777d3bfa-8358-4259-9649-32f50b72e8cd"
+      }
+    },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -15,13 +14,8 @@
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "package": "com.sudiptanull.catalogcart",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
     }
   }
 }

@@ -1,10 +1,13 @@
 {
   "expo": {
-    "extra": {
-      "eas": {
-        "projectId": "777d3bfa-8358-4259-9649-32f50b72e8cd"
-      }
-    },
+    "name": "CatalogCart",
+    "slug": "catalogcart",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "myapp",
+    "owner": "rustin66",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -14,8 +17,12 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.sudiptanull.catalogcart",
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+      "package": "com.catalogcart"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9830c6b8-a19c-4518-bf13-61f120c1799c"
+      }
     }
   }
 }

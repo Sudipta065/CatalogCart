@@ -31,7 +31,7 @@ const FloatingCart = () => {
 const styles = StyleSheet.create({
   button: {
     position: "absolute",
-    bottom: 20,
+    top: "50%",
     right: 20,
     backgroundColor: "#4CAF50",
     width: 50,

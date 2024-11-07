@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, Button, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import {
@@ -36,14 +42,31 @@ const CartScreen = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.cartItem}>
-            <Text style={styles.itemTitle}>{item.title}</Text>
-            <Text style={styles.itemPrice}>${item.price}</Text>
-            <View style={styles.quantityContainer}>
-              <Button title="-" onPress={() => handleDecrease(item.id)} />
-              <Text style={styles.quantity}>{item.quantity}</Text>
-              <Button title="+" onPress={() => handleIncrease(item.id)} />
+            <View style={styles.itemDetails}>
+              <Text style={styles.itemTitle}>{item.title}</Text>
+              <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+              <View style={styles.quantityContainer}>
+                <TouchableOpacity
+                  style={styles.quantityButton}
+                  onPress={() => handleDecrease(item.id)}
+                >
+                  <Text style={styles.quantityButtonText}>-</Text>
+                </TouchableOpacity>
+                <Text style={styles.quantity}>{item.quantity}</Text>
+                <TouchableOpacity
+                  style={styles.quantityButton}
+                  onPress={() => handleIncrease(item.id)}
+                >
+                  <Text style={styles.quantityButtonText}>+</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <Button title="Remove" onPress={() => handleRemove(item.id)} />
+            <TouchableOpacity
+              style={styles.removeButton}
+              onPress={() => handleRemove(item.id)}
+            >
+              <Text style={styles.removeButtonText}>Remove</Text>
+            </TouchableOpacity>
           </View>
         )}
         ListEmptyComponent={
@@ -62,50 +85,92 @@ const CartScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
+    padding: 20,
+    backgroundColor: "#f9f9f9",
   },
   header: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
-    marginBottom: 15,
+    marginBottom: 20,
+    textAlign: "center",
+    color: "#333",
   },
   cartItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-    marginBottom: 10,
+    borderRadius: 10,
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  itemDetails: {
+    flex: 1,
+    marginRight: 10,
   },
   itemTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 5,
   },
   itemPrice: {
     fontSize: 16,
-    color: "#555",
+    color: "#6200ee",
+    marginBottom: 10,
   },
   quantityContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 10,
+  },
+  quantityButton: {
+    backgroundColor: "#6200ee",
+    borderRadius: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  quantityButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
   quantity: {
-    marginHorizontal: 10,
+    marginHorizontal: 15,
     fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  removeButton: {
+    backgroundColor: "#e63946",
+    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    alignSelf: "center",
+  },
+  removeButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
   },
   emptyText: {
     textAlign: "center",
     fontSize: 18,
     color: "#888",
-    marginTop: 20,
+    marginTop: 30,
   },
   totalContainer: {
-    paddingVertical: 15,
+    paddingVertical: 20,
     borderTopWidth: 1,
     borderTopColor: "#ddd",
+    marginTop: 15,
     alignItems: "center",
   },
   totalText: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#333",
   },

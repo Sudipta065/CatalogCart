@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet, Button } from "react-native";
-
+import React from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addToCart,
   increaseQuantity,
   decreaseQuantity,
 } from "../store/cartSlice";
-import { RootState } from '../store/store';
+import { RootState } from "../store/store";
+
 const ProductDetailsScreen = ({ route }) => {
   const { product } = route.params;
   const dispatch = useDispatch();
@@ -20,6 +27,7 @@ const ProductDetailsScreen = ({ route }) => {
       addToCart({ id: product.id, title: product.title, price: product.price })
     );
   };
+
   const handleIncrease = () => {
     dispatch(increaseQuantity(product.id));
   };
@@ -29,104 +37,117 @@ const ProductDetailsScreen = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.productCard}>
         <Image source={{ uri: product.image }} style={styles.productImage} />
         <Text style={styles.productTitle}>{product.title}</Text>
-        <Text style={styles.productPrice}>${product.price}</Text>
+        <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
         <Text style={styles.productDescription}>{product.description}</Text>
         {cartItem ? (
           <View style={styles.quantityContainer}>
-            <Button title="-" onPress={handleDecrease} />
+            <TouchableOpacity
+              style={styles.quantityButton}
+              onPress={handleDecrease}
+            >
+              <Text style={styles.quantityButtonText}>-</Text>
+            </TouchableOpacity>
             <Text style={styles.quantityText}>{cartItem.quantity}</Text>
-            <Button title="+" onPress={handleIncrease} />
+            <TouchableOpacity
+              style={styles.quantityButton}
+              onPress={handleIncrease}
+            >
+              <Text style={styles.quantityButtonText}>+</Text>
+            </TouchableOpacity>
           </View>
         ) : (
-          <Button title="Add to Cart" onPress={handleAddToCart} />
+          <TouchableOpacity
+            style={styles.addToCartButton}
+            onPress={handleAddToCart}
+          >
+            <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+          </TouchableOpacity>
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f7f7",
-    padding: 10,
+    backgroundColor: "#f0f0f5",
   },
   productCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 10,
-    padding: 15,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    margin: 15,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 4,
-    marginBottom: 20,
+    elevation: 5,
   },
   productImage: {
     width: "100%",
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 10,
+    height: 250,
+    borderRadius: 12,
+    marginBottom: 15,
+    resizeMode: "cover",
   },
   productTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 8,
-  },
-  productPrice: {
-    fontSize: 16,
-    color: "#ff6347",
     marginBottom: 10,
   },
+  productPrice: {
+    fontSize: 20,
+    color: "#e76f51",
+    fontWeight: "600",
+    marginBottom: 15,
+  },
   productDescription: {
-    fontSize: 14,
-    color: "#666",
-    lineHeight: 20,
-  },
-  mapHeader: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  map: {
-    height: 200,
-    borderRadius: 10,
-  },
-  loader: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 10,
-  },
-  quantityButton: {
-    backgroundColor: "#ff6347",
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    alignItems: "center",
-    justifyContent: "center",
+    color: "#555",
+    lineHeight: 22,
+    marginBottom: 20,
   },
   quantityContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    justifyContent: "center",
+    marginVertical: 10,
+  },
+  quantityButton: {
+    backgroundColor: "#2a9d8f",
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    marginHorizontal: 5,
+  },
+  quantityButtonText: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
   },
   quantityText: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "#333",
     marginHorizontal: 10,
+  },
+  addToCartButton: {
+    backgroundColor: "#e76f51",
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    alignItems: "center",
+  },
+  addToCartButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 

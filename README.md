@@ -68,7 +68,11 @@ brew install watchman
 1. **Start the development server:**
 
    ```bash
-   npx expo start
+   npx expo start 
+   ```
+   or
+    ```bash
+   expo start 
    ```
 
 2. **Run on your device or simulator:**
@@ -80,6 +84,10 @@ brew install watchman
 3. **Clear the cache** (if needed):
 
    ```bash
+   npx expo start -c
+   ```
+   or
+    ```bash
    expo start -c
    ```
 
